@@ -13,7 +13,7 @@ SaveTabs provides a button in Chrome to save all the tabs in your current window
 
 ## Issues
 
-Please open an issue on GitHub's issue tracker for this project.
+Please open an issue on [the GitHub issue tracker for this project](https://github.com/cdzombak/SaveTabs/issues).
 
 ## FAQ
 
