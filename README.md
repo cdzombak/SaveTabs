@@ -9,7 +9,6 @@ SaveTabs provides a button in Chrome to save all the tabs in your current window
 ## Todo
 
 * Better icon on Chrome store and in manifest
-* Handle incognito mode (add option for incognito behavior)
 
 ## Issues
 

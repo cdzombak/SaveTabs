@@ -1,6 +1,6 @@
 {
   "name": "SaveTabs",
-  "version": "0.1",
+  "version": "0.2",
   "description": "Saves all the tabs in your current window to a new, timestamped, bookmarks folder.",
   "browser_action": {
     "default_icon":  "icon.png",
@@ -8,6 +8,7 @@
   },
   "background_page": "background.html",
   "homepage_url": "http://github.com/cdzombak/SaveTabs",
+  "options_page": "options.html",
   "permissions": [
     "bookmarks",
 	"tabs"

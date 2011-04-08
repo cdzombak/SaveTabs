@@ -19,18 +19,34 @@
 	
 	// Called when the user clicks on the browser action.
 	chrome.browserAction.onClicked.addListener(function(currentTab) {
+		var saveIncognito = localStorage["saveIncognito"];
 		chrome.tabs.getAllInWindow(currentTab.windowId, function(tabs){
+			// Don't save an empty folder
+			var foundNonIncognitoTab = false;
+			if (!tabs.length) return;
+			if (!saveIncognito) {
+				for (var i=0; i<tabs.length; i++) {
+					if (!tabs[i].incognito) {
+						foundNonIncognitoTab = true;
+						break;
+					}
+				}
+				if (!foundNonIncognitoTab) return;
+			}
 			chrome.bookmarks.create({
 				'parentId': "1",
 				'title':    getCurrentDateTime()
 			}, function(folder){
-				for (var i=0; i<tabs.length; i++)
-					chrome.bookmarks.create({
-						'parentId': folder.id,
-						'index':    i,
-						'title':    tabs[i].title,
-						'url':      tabs[i].url
-					});
+				for (var i=0; i<tabs.length; i++) {
+					if (!tabs[i].incognito || saveIncognito) {
+						chrome.bookmarks.create({
+							'parentId': folder.id,
+							'index':    i,
+							'title':    tabs[i].title,
+							'url':      tabs[i].url
+						});
+					}
+				}
 			});
 			changeIcon();
 		});

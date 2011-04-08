@@ -1,0 +1,35 @@
+<html>
+<head>
+	<title>SaveTabs Options</title>
+	
+	<script type="text/javascript">
+	// Based on this code: http://code.google.com/chrome/extensions/options.html
+	// There's probably a cleaner, more extensible way to do this
+	//  and I should rewrite this using jQuery at some point
+
+	function save_options() {
+		var saveIncognito_check = document.getElementById("saveIncognito_check");
+		localStorage["saveIncognito"] = saveIncognito_check.checked;
+	}
+
+	function restore_options() {
+		var saveIncognito = localStorage["saveIncognito"];
+		var saveIncognito_check = document.getElementById("saveIncognito_check");
+		
+		if (saveIncognito) {
+			saveIncognito_check.checked = true;
+		} else {
+			saveIncognito_check.checked = false;
+		}
+	}
+	</script>
+</head>
+
+<body onload="restore_options()">
+
+<input type="checkbox" name="saveIncognito_check" id="saveIncognito_check" onclick="save_options();"> <label for="saveIncognito_check">Save Incognito tabs</label>
+
+<br /><br /><em>Changes are saved instantly.</em>
+
+</body>
+</html>
