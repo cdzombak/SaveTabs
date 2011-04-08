@@ -1,0 +1,40 @@
+<html>
+<head>
+<script>
+	function pad(x, len) {
+		var str = '' + x;
+		while (str.length < len) str = '0' + str;
+		return str;
+	}
+	
+	function getCurrentDateTime() {
+		var now = new Date();
+		return now.getFullYear() + '-' + pad(now.getMonth(),2) + '-' + pad(now.getDate(),2) + ' ' + now.getHours() + ':' + pad(now.getMinutes(),2);
+	}
+	
+	function changeIcon() {
+		chrome.browserAction.setIcon({'path':'icon-done.png'});
+		setTimeout("chrome.browserAction.setIcon({'path':'icon.png'});", 1500);
+	}
+	
+	// Called when the user clicks on the browser action.
+	chrome.browserAction.onClicked.addListener(function(currentTab) {
+		chrome.tabs.getAllInWindow(currentTab.windowId, function(tabs){
+			chrome.bookmarks.create({
+				'parentId': "1",
+				'title':    getCurrentDateTime()
+			}, function(folder){
+				for (var i=0; i<tabs.length; i++)
+					chrome.bookmarks.create({
+						'parentId': folder.id,
+						'index':    i,
+						'title':    tabs[i].title,
+						'url':      tabs[i].url
+					});
+			});
+			changeIcon();
+		});
+	});
+</script>
+</head>
+</html>
