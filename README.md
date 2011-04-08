@@ -4,7 +4,7 @@ SaveTabs provides a button in Chrome to save all the tabs in your current window
 
 ## Download/Install
 
-The [extension is available in the Chrome store](https://chrome.google.com/webstore/detail/ciemojomefnilhnidpjknolhbefbdoie). (It's free.)
+[Download the extension from the Chrome store](https://chrome.google.com/webstore/detail/ciemojomefnilhnidpjknolhbefbdoie). (It's free.)
 
 ## Todo
 
