@@ -17,9 +17,21 @@
 		setTimeout("chrome.browserAction.setIcon({'path':'icon.png'});", 1500);
 	}
 	
+	// wtf localstorage
+	function toBool(str) { return str.toLowerCase().charAt(0) == "t"; }
+	
 	// Called when the user clicks on the browser action.
 	chrome.browserAction.onClicked.addListener(function(currentTab) {
-		var saveIncognito = localStorage["saveIncognito"];
+		var saveIncognito = toBool(localStorage['saveIncognito']);
+		var parentFolderId = localStorage['bookmarkFolderId'];
+		
+		// default settings:
+		if (!localStorage['firstStart']) {
+			localStorage['saveIncognito'] = false;
+			localStorage['bookmarkFolderId'] = 1;
+			localStorage['firstStart'] = 1;
+		}
+		
 		chrome.tabs.getAllInWindow(currentTab.windowId, function(tabs){
 			// Don't save an empty folder
 			var foundNonIncognitoTab = false;
@@ -34,7 +46,7 @@
 				if (!foundNonIncognitoTab) return;
 			}
 			chrome.bookmarks.create({
-				'parentId': "1",
+				'parentId': parentFolderId,
 				'title':    getCurrentDateTime()
 			}, function(folder){
 				for (var i=0; i<tabs.length; i++) {

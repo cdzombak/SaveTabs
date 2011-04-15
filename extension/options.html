@@ -2,34 +2,135 @@
 <head>
 	<title>SaveTabs Options</title>
 	
+	<style type="text/css">
+		body {
+			font-family: "Segoe UI", Candara, "Bitstream Vera Sans", "DejaVu Sans", "Bitstream Vera Sans", "Trebuchet MS", Verdana, "Verdana Ref", sans-serif;
+		}
+		
+		h1 {
+			font-size: 20px;
+			width: 100%;
+			border-bottom: 1px solid #333;
+		}
+		
+		#bookmark-tree {
+			margin-top: 8px;
+			width: 600px;
+			height: 300px;
+			border: 1px dotted black;
+		}
+		
+		#bookmark-tree a {
+			cursor: default;
+		}
+	</style>
+	
+	<script type="text/javascript" src="lib/jquery-1.5.2.min.js"></script>
+	<script type="text/javascript" src="lib/jquery.jstree.js"></script>
 	<script type="text/javascript">
-	// Based on this code: http://code.google.com/chrome/extensions/options.html
+	// Based on this example: http://code.google.com/chrome/extensions/options.html
 	// There's probably a cleaner, more extensible way to do this
-	//  and I should rewrite this using jQuery at some point
 
 	function save_options() {
-		var saveIncognito_check = document.getElementById("saveIncognito_check");
-		localStorage["saveIncognito"] = saveIncognito_check.checked;
+		localStorage["saveIncognito"] = $('#saveIncognito_check').is(':checked');
+		console.log('saved: ' + localStorage["saveIncognito"]);
+		// the current bookmark folder is saved whenever it is selected.
 	}
 
 	function restore_options() {
-		var saveIncognito = localStorage["saveIncognito"];
-		var saveIncognito_check = document.getElementById("saveIncognito_check");
-		
+		var saveIncognito = toBool(localStorage["saveIncognito"]);
+	
 		if (saveIncognito) {
-			saveIncognito_check.checked = true;
+			console.log('loaded: true');
+			$('#saveIncognito_check').attr('checked', 'checked');
 		} else {
-			saveIncognito_check.checked = false;
+			$('#saveIncognito_check').removeAttr('checked');
 		}
 	}
+	
+	// wtf localstorage
+	function toBool(str) { return str.toLowerCase().charAt(0) == "t"; }
+	
+	// tree: array of BookmarksTreeNode
+	// target: ul selector
+	function render_subtree(tree, selector) {
+		for (var i=0; i<tree.length; ++i) {
+			// we only want folders:
+			if (tree[i].url) continue;
+			
+			$('<li/>', {
+				id: 'bookmark-folder-' + tree[i].id
+				})
+				.data('BookmarkTreeNode', tree[i])
+				.appendTo(selector)
+				.append('<a href="#">'+tree[i].title+'</a>') // TODO: probably want to sanitize a little here
+			; // &$&^#%&^# jstree requires that there be an <a> here. #wtf
+			
+			if (tree[i].children && tree[i].children.length) {
+				$('<ul/>', {
+					id: 'bookmark-ul-folder-' + tree[i].id
+				}).appendTo('#bookmark-folder-' + tree[i].id);
+				
+				render_subtree(tree[i].children, '#bookmark-ul-folder-' + tree[i].id);
+			}
+		}
+	}
+	
+	$(document).ready(function() {
+		chrome.bookmarks.getTree(function(tree){
+			// wish I could use Tempo, but I need to attach jQuery data, and I don't know if Tempo can render recursively
+			render_subtree(tree[0].children, '#bookmark-ul-folder-0');
+			
+			var savedFolder = '';
+			var parentFolder = 'root';
+			if (localStorage['bookmarkFolderId']) savedFolder = 'bookmark-folder-' + localStorage['bookmarkFolderId'];
+			if (savedFolder != '') parentFolder = 'bookmark-folder-' + $('#'+savedFolder).data('BookmarkTreeNode').parentId;
+			
+			$('#bookmark-tree').jstree({
+				'core': {
+					'initially_open': [ parentFolder ],
+					'animation': 100
+				},
+				'html_data': { "data" : false },
+				'themes': { 'theme': 'apple' },
+				'ui': { 
+					'select_limit': 1,
+					'selected_parent_close': false,
+					'initially_select': [ savedFolder ]
+				},
+				'plugins' : [ 'themes', 'html_data', 'ui' ]
+			});
+			
+			restore_options();
+			
+			$('#bookmark-tree').delegate("a", "click", function(){
+				// I wish there were a better way to trigger something onselect in jstree.
+				// srsly, wtf, jstree.
+				localStorage['bookmarkFolderId'] = $(this).closest('li').data('BookmarkTreeNode').id;
+			});
+			
+			$('input').change( function() {
+				save_options();
+			});
+		});
+	});
 	</script>
 </head>
 
-<body onload="restore_options()">
+<body>
 
-<input type="checkbox" name="saveIncognito_check" id="saveIncognito_check" onclick="save_options();"> <label for="saveIncognito_check">Save Incognito tabs</label>
+<h1>SaveTabs Settings</h1>
 
-<br /><br /><em>Changes are saved instantly.</em>
+<em>Changes are saved instantly.</em>
+<br /><br />
+
+<input type="checkbox" id="saveIncognito_check"> <label for="saveIncognito_check">Allow saving Incognito tabs</label>
+<br /><br />
+
+Parent for new bookmark folders:
+<div id="bookmark-tree">
+<ul id="bookmark-ul-folder-0"></ul>
+</div>
 
 </body>
 </html>
