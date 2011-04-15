@@ -22,15 +22,15 @@
 	
 	// Called when the user clicks on the browser action.
 	chrome.browserAction.onClicked.addListener(function(currentTab) {
-		var saveIncognito = toBool(localStorage['saveIncognito']);
-		var parentFolderId = localStorage['bookmarkFolderId'];
-		
 		// default settings:
 		if (!localStorage['firstStart']) {
 			localStorage['saveIncognito'] = false;
 			localStorage['bookmarkFolderId'] = 1;
 			localStorage['firstStart'] = 1;
 		}
+		
+		var saveIncognito = toBool(localStorage['saveIncognito']);
+		var parentFolderId = localStorage['bookmarkFolderId'];
 		
 		chrome.tabs.getAllInWindow(currentTab.windowId, function(tabs){
 			// Don't save an empty folder
