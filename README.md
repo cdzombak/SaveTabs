@@ -10,10 +10,6 @@ SaveTabs provides a button in Chrome to save all the tabs in your current window
 
 Please open an issue on [the GitHub issue tracker for this project](https://github.com/cdzombak/SaveTabs/issues).
 
-## FAQ
-
-...coming soon
-
 ## History
 
 * v0.4 added the option to choose where the new bookmarks folders are created
