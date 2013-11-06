@@ -1,17 +1,23 @@
 {
   "name": "SaveTabs",
+  "author": "Chris Dzombak <http://chris.dzombak.name>",
+  "manifest_version": 2,
   "version": "0.4.1",
-  "description": "Saves all the tabs in your current window to a new, timestamped, bookmarks folder.",
+  "description": "Save the tabs in your current window to a new, timestamped, bookmarks folder.",
   "browser_action": {
     "default_icon":  "icon.png",
-	"default_title": "Save all tabs in a new bookmarks folder"
+    "default_title": "Save tabs in a new bookmarks folder"
   },
-  "background_page": "background.html",
+  "background": {
+    "scripts": [ "background.js" ],
+    "persistent": false
+  },
   "homepage_url": "http://github.com/cdzombak/SaveTabs",
   "options_page": "options.html",
   "permissions": [
     "bookmarks",
-	"tabs"
+    "tabs",
+    "alarms"
   ],
   "icons": {
     "16": "icon/icon-16.png",
