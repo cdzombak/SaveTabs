@@ -12,6 +12,7 @@ Please open an issue on [the GitHub issue tracker for this project](https://gith
 
 ## History
 
+* v0.5: compatibility with Chrome's manifest v2 format. Use an event page instead of a persistent background page. Redesigned & simplified options page. New icons.
 * v0.4.1: ?
 * v0.4 added the option to choose where the new bookmarks folders are created
 * v0.3 fixed an off-by-one error in the month
