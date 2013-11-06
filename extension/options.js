@@ -1,26 +1,6 @@
 // Based on this example: http://code.google.com/chrome/extensions/options.html
 // There's probably a cleaner, more extensible way to do this
 
-function save_options() {
-    localStorage["saveIncognito"] = $('#saveIncognito_check').is(':checked');
-    console.log('saved: ' + localStorage["saveIncognito"]);
-    // the current bookmark folder is saved whenever it is selected.
-}
-
-function restore_options() {
-    var saveIncognito = toBool(localStorage["saveIncognito"]);
-
-    if (saveIncognito) {
-        console.log('loaded: true');
-        $('#saveIncognito_check').attr('checked', 'checked');
-    } else {
-        $('#saveIncognito_check').removeAttr('checked');
-    }
-}
-
-// wtf localstorage
-function toBool(str) { return str.toLowerCase().charAt(0) == "t"; }
-
 // tree: array of BookmarksTreeNode
 // target: ul selector
 function render_subtree(tree, selector) {
@@ -71,16 +51,10 @@ $(document).ready(function() {
             'plugins' : [ 'themes', 'html_data', 'ui' ]
         });
 
-        restore_options();
-
         $('#bookmark-tree').delegate("a", "click", function(){
             // I wish there were a better way to trigger something onselect in jstree.
             // srsly, wtf, jstree.
             localStorage['bookmarkFolderId'] = $(this).closest('li').data('BookmarkTreeNode').id;
-        });
-
-        $('input').change( function() {
-            save_options();
         });
     });
 });

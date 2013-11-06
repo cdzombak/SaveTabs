@@ -11,12 +11,6 @@ function getCurrentDateTime() {
     return now.getFullYear() + '-' + pad(now.getMonth()+1,2) + '-' + pad(now.getDate(),2) + ' ' + now.getHours() + ':' + pad(now.getMinutes(),2);
 }
 
-/// Coerces the given string into a bool, based on whether the string is "true" or "false"
-function toBool(str) {
-    // wtf localstorage
-    return str.toLowerCase().charAt(0) == "t";
-}
-
 /// Changes the browser action icon to the "done" state.
 /// Schedules a timer to change the icon back later.
 function changeIcon() {
@@ -33,42 +27,30 @@ chrome.alarms.onAlarm.addListener(function(alarm) {
 chrome.browserAction.onClicked.addListener(function(currentTab) {
     // default settings:
     if (!localStorage['firstStart']) {
-        localStorage['saveIncognito'] = false;
         localStorage['bookmarkFolderId'] = 1;
         localStorage['firstStart'] = 1;
     }
 
-    var saveIncognito = toBool(localStorage['saveIncognito']);
     var parentFolderId = localStorage['bookmarkFolderId'];
 
     chrome.tabs.getAllInWindow(currentTab.windowId, function(tabs){
         // Don't save an empty folder
-        var foundNonIncognitoTab = false;
         if (!tabs.length) return;
-        if (!saveIncognito) {
-            for (var i=0; i<tabs.length; i++) {
-                if (!tabs[i].incognito) {
-                    foundNonIncognitoTab = true;
-                    break;
-                }
-            }
-            if (!foundNonIncognitoTab) return;
-        }
+
         chrome.bookmarks.create({
             'parentId': parentFolderId,
             'title':    getCurrentDateTime()
-        }, function(folder){
+        }, function(folder) {
             for (var i=0; i<tabs.length; i++) {
-                if (!tabs[i].incognito || saveIncognito) {
-                    chrome.bookmarks.create({
-                        'parentId': folder.id,
-                        'index':    i,
-                        'title':    tabs[i].title,
-                        'url':      tabs[i].url
-                    });
-                }
+                chrome.bookmarks.create({
+                    'parentId': folder.id,
+                    'index':    i,
+                    'title':    tabs[i].title,
+                    'url':      tabs[i].url
+                });
             }
         });
+
         changeIcon();
     });
 });
